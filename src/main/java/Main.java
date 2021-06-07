@@ -3,19 +3,16 @@ import java.io.IOException;
 
 public class Main {
 
-    private static final String ONE = "https://jsonplaceholder.typicode.com/posts";
-    private static final String TWO = "https://jsonplaceholder.typicode.com/comments";
-    private static final String THREE = "https://jsonplaceholder.typicode.com/photos";
-    private static final String FOUR = "https://jsonplaceholder.typicode.com/todos";
-    private static final String FIVE = "https://jsonplaceholder.typicode.com/users";
-    private static final String SIX = "https://jsonplaceholder.typicode.com/posts/1/comments";
-
     public static void main(String[] args) throws IOException {
 
         GetJsonHttp getJsonHttp = new GetJsonHttp();
 
+        //System.out.println(getJsonHttp.getJson(THREE));
 
-        getJsonHttp.provide(FIVE);
+        //getJsonHttp.postJson("https://jsonplaceholder.typicode.com/posts");
+
+        getJsonHttp.putUser(new User(2,2,"aaaa","bbbb"));
+        //System.out.println(getJsonHttp.getJson("https://jsonplaceholder.typicode.com/posts/1"));
 
     }
 }
