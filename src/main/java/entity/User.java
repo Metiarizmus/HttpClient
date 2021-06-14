@@ -1,3 +1,5 @@
+package entity;
+
 public class User {
     private int userId;
     private int id;
@@ -13,11 +15,12 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "entity.User{" +
                 "userId=" + userId +
                 ", id=" + id +
                 ", title='" + title + '\'' +
                 ", body='" + body + '\'' +
                 '}';
     }
+
 }
