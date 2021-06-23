@@ -3,11 +3,11 @@ package logic;
 import java.io.IOException;
 import java.util.List;
 
-public interface IHttpLogic {
+public interface IHttpLogic<E> {
 
-    public String getJsson(String s) throws IOException;
+    String getJson(String s) throws IOException;
 
-    public List<String> postJson(String url) throws IOException;
+    void postJson(String url, E e) throws IOException;
 
-    public void putObject(Object o, String url) throws IOException;
+    void putObject(E o, String url) throws IOException;
 }

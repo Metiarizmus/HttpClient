@@ -3,24 +3,23 @@ package logic;
 import services.HttpServices;
 
 import java.io.IOException;
-import java.util.List;
 
-public class HttpLogic implements IHttpLogic{
+public class HttpLogic<E> implements IHttpLogic<E> {
 
-    private HttpServices http = new HttpServices();
+    private HttpServices<E> http = new HttpServices();
 
     @Override
-    public String getJsson(String s) throws IOException {
+    public String getJson(String s) throws IOException {
         return http.getJson(s);
     }
 
     @Override
-    public List<String> postJson(String url) throws IOException {
-        return http.postJson(url);
+    public void postJson(String url, E e) throws IOException {
+        http.postJson(url, e);
     }
 
     @Override
-    public void putObject(Object o, String url) throws IOException {
-        http.putObject(o,url);
+    public void putObject(E o, String url) throws IOException {
+        http.putObject(o, url);
     }
 }

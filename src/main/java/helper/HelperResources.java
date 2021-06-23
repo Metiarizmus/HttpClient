@@ -8,7 +8,7 @@ import java.util.Properties;
 public class HelperResources {
     private static String path = "C:\\Users\\Николай\\IdeaProjects\\HttpClientLearn\\src\\main\\resources\\list.properties";
 
-    public Properties getResources() {
+    public static Properties getResources() {
         FileInputStream fis;
         Properties property = new Properties();
         try {

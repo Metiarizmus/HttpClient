@@ -1,4 +1,5 @@
 
+import entity.User;
 import helper.HelperResources;
 import logic.HttpLogic;
 
@@ -10,14 +11,14 @@ public class Main {
 
         HelperResources helperResources = new HelperResources();
 
-        HttpLogic logic = new HttpLogic();
+        HttpLogic<User> logic = new HttpLogic();
 
+        System.out.println(logic.getJson(helperResources.getResources().getProperty("get2")));
 
-         //System.out.println(getJsonHttp.postJson(helperResources.getResources().getProperty("post")));
+        logic.putObject(new User(2, 2, "aaaa", "bbbb"), helperResources.getResources().getProperty("put"));
 
-         logic.putObject(new entity.User(2,2,"aaaa","bbbb"),helperResources.getResources().getProperty("put"));
+        logic.postJson(helperResources.getResources().getProperty("post"),new User(0111,111,"qwe","ewq"));
 
-        //System.out.println(getJsonHttp.getJson("https://jsonplaceholder.typicode.com/posts/1"));
 
     }
 }
