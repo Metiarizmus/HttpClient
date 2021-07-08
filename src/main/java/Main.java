@@ -1,9 +1,11 @@
 
+import entity.MethodName;
 import entity.User;
 import helper.HelperResources;
-import logic.HttpLogic;
+import services.HttpServices;
 
 import java.io.IOException;
+
 
 public class Main {
 
@@ -11,14 +13,13 @@ public class Main {
 
         HelperResources helperResources = new HelperResources();
 
-        HttpLogic<User> logic = new HttpLogic();
+        HttpServices services = new HttpServices();
 
-        System.out.println(logic.getJson(helperResources.getResources().getProperty("get2")));
+        services.differentType(MethodName.POST,helperResources.getResources().getProperty("post"), new User(0111,111,"qwe","ewq"));
 
-        logic.putObject(new User(2, 2, "aaaa", "bbbb"), helperResources.getResources().getProperty("put"));
+        services.differentType(MethodName.GET,helperResources.getResources().getProperty("get2"), null);
 
-        logic.postJson(helperResources.getResources().getProperty("post"),new User(0111,111,"qwe","ewq"));
-
+        services.differentType(MethodName.PUT, helperResources.getResources().getProperty("put"), new User(2, 2, "aaaa", "bbbb"));
 
     }
 }

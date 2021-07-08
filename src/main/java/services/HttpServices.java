@@ -2,12 +2,11 @@ package services;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import entity.MethodName;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -16,45 +15,46 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 
 public class HttpServices<E> {
 
-    public String getJson(String s) throws IOException {
 
-        if (s != null) {
+    private void getJson(String url) throws IOException {
 
-            CloseableHttpClient httpClient = null;
+        if (url != null) {
 
-            try {
-                httpClient = HttpClients.createDefault();
 
-                HttpGet httpGet = new HttpGet(s);
+            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 
-                CloseableHttpResponse httpResponse = httpClient.execute(httpGet);
+                HttpGet httpGet = new HttpGet(url);
 
-                HttpEntity entity = httpResponse.getEntity();
+                System.out.println("Request Type: " + httpGet.getMethod());
 
-                String ss = EntityUtils.toString(entity);
 
-                return ss;
+                try (CloseableHttpResponse httpResponse = httpClient.execute(httpGet)) {
 
-            } finally {
-                httpClient.close();
+                    HttpEntity entity = httpResponse.getEntity();
+
+                    if (entity != null) {
+                        System.out.println(EntityUtils.getContentCharSet(entity));
+                        System.out.println(EntityUtils.getContentMimeType(entity));
+
+                        String responseString = EntityUtils.toString(entity, "UTF-8");
+
+                        System.out.println(responseString);
+
+                    }
+                }
             }
         }
-        return null;
+
     }
 
-    public void putObject(E object, String url) throws IOException {
+    private void putObject(String url,E object) throws IOException {
 
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
 
@@ -100,7 +100,7 @@ public class HttpServices<E> {
         }
     }
 
-    public void postJson(String uri, E obj) throws IOException {
+    private void postJson(String uri, E obj) throws IOException {
 
         Gson gson = new Gson();
 
@@ -111,15 +111,29 @@ public class HttpServices<E> {
         StringEntity postString = new StringEntity(gson.toJson(obj));
         post.setEntity(postString);
         post.setHeader("Content-type", "application/json");
+
+
         HttpResponse response = httpClient.execute(post);
 
+        HttpEntity resEntite = response.getEntity();
 
-        Scanner sc = new Scanner(response.getEntity().getContent());
+        String ret = EntityUtils.toString(resEntite);
 
-        while (sc.hasNext()) {
-            System.out.println(sc.nextLine());
-        }
+        System.out.println(ret);
+
 
     }
+
+
+
+    public void differentType(MethodName name, String url, E e) throws IOException {
+
+        switch (name){
+            case GET -> new HttpServices<>().getJson(url);
+            case PUT -> new HttpServices<>().putObject(url, e);
+            case POST -> new HttpServices<>().postJson(url, e);
+        }
+    }
+
 
 }
