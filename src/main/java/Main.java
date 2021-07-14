@@ -15,11 +15,12 @@ public class Main {
 
         HttpServices services = new HttpServices();
 
-        services.differentType(MethodName.POST,helperResources.getResources().getProperty("post"), new User(0111,111,"qwe","ewq"));
+        //services.postJson(helperResources.getResources().getProperty("post"), new User(0111,111,"qwe","ewq"));
 
-        services.differentType(MethodName.GET,helperResources.getResources().getProperty("get2"), null);
+        services.putObject(helperResources.getResources().getProperty("put"), new User(0111,111,"qwe","ewq"));
 
-        services.differentType(MethodName.PUT, helperResources.getResources().getProperty("put"), new User(2, 2, "aaaa", "bbbb"));
+
+        services.putOrPost(MethodName.PUT, new User(0111,111,"qwe","ewq"));
 
     }
 }
