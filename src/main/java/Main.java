@@ -15,10 +15,7 @@ public class Main {
 
         HttpServices services = new HttpServices();
 
-        //services.postJson(helperResources.getResources().getProperty("post"), new User(0111,111,"qwe","ewq"));
-
-        services.putObject(helperResources.getResources().getProperty("put"), new User(0111,111,"qwe","ewq"));
-
+        services.getJson(helperResources.getResources().getProperty("get1"));
 
         services.putOrPost(MethodName.PUT, new User(0111,111,"qwe","ewq"));
 
