@@ -2,19 +2,19 @@ package services;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import entity.HttpStatusCodeRange;
 import entity.MethodName;
 import helper.HelperResources;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.*;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
@@ -66,57 +66,61 @@ public class HttpServices<E> {
 
         StringEntity stringEntity = new StringEntity(gson.toJson(object));
 
-        if (name == MethodName.POST) {
-            post = new HttpPost(helperResources.getResources().getProperty("post"));
-            post.setHeader("Accept", "application/json");
-            post.setHeader("Content-type", "application/json");
-            post.setEntity(stringEntity);
-            System.out.println("Executing request " + post.getRequestLine());
-
-        }else {
-            put = new HttpPut(helperResources.getResources().getProperty("put"));
-            put.setHeader("Accept", "application/json");
-            put.setHeader("Content-type", "application/json");
-            put.setEntity(stringEntity);
-            System.out.println("Executing request " + put.getRequestLine());
-
-        }
-
-
-
         ResponseHandler<E> responseHandler = new ResponseHandler<E>() {
-
             @Override
-            public E handleResponse(HttpResponse httpResponse) throws IOException {
-
+            public E handleResponse(HttpResponse httpResponse) throws ClientProtocolException, IOException {
                 int httpResponseCode = httpResponse.getStatusLine().getStatusCode();
                 System.out.println("Response code: " + httpResponseCode);
-                if (httpResponseCode >= 200 && httpResponseCode < 300) {
+
+                if (getRange(httpResponseCode) == HttpStatusCodeRange.SUCCESS_RANGE) {
 
                     HttpEntity entity = httpResponse.getEntity();
 
                     return entity != null ? (E) EntityUtils.toString(entity) : null;
                 } else {
-                    return null;
-
+                    return (E) getRange(httpResponseCode);
                 }
             }
         };
 
-        try {
+        if (name == MethodName.POST) {
+            post = new HttpPost(helperResources.getResources().getProperty("post"));
 
-            if (put != null){
-                E strResponse = httpclient.execute(put, responseHandler);
-                System.out.println("Response: " + strResponse);
-            }else {
-                E strResponse = httpclient.execute(post, responseHandler);
-                System.out.println("Response: " + strResponse);
-            }
+            post.setHeader(HttpHeaders.ACCEPT, "application/json");
+            post.setHeader("Content-type", String.valueOf(ContentType.APPLICATION_JSON));
+            post.setEntity(stringEntity);
+            System.out.println("Executing request " + post.getRequestLine());
 
-        } catch (IOException ex) {
-            System.err.println("response error!");
+            E strResponsePost = httpclient.execute(post, responseHandler);
+            System.out.println("Response: " + strResponsePost);
+
+        } else {
+            put = new HttpPut(helperResources.getResources().getProperty("put"));
+
+            put.setHeader(HttpHeaders.ACCEPT_RANGES, "application/json");
+            put.setHeader("Content-type", String.valueOf(ContentType.APPLICATION_JSON));
+            put.setEntity(stringEntity);
+            System.out.println("Executing request " + put.getRequestLine());
+
+            E strResponsePut = httpclient.execute(put, responseHandler);
+            System.out.println("Response: " + strResponsePut);
+
         }
 
+    }
+
+
+    private static HttpStatusCodeRange getRange(int code) {
+        if (code >= 200 && code < 300) {
+            return HttpStatusCodeRange.SUCCESS_RANGE;
+        }
+        if (code >= 400 && code < 500) {
+            return HttpStatusCodeRange.CLIENT_ERROR_RANGE;
+        }
+        if (code >= 500 && code < 600) {
+            return HttpStatusCodeRange.SERVER_ERROR_RANGE;
+        }
+        return HttpStatusCodeRange.UNKNOWN;
     }
 
 
